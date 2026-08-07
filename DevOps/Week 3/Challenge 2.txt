@@ -1,0 +1,20 @@
+git remote add origin git@github.com:rmit-vietnam-computing-technologies/<your-repo-name>.git
+git remote -v
+
+# if "remote origin already exists":
+git remote set-url origin git@github.com:rmit-vietnam-computing-technologies/<your-repo-name>.git
+
+git fetch origin
+git branch -a
+git log --oneline --graph --decorate --all
+git branch --set-upstream-to=origin/main main
+git branch -vv
+
+git pull --no-rebase --allow-unrelated-histories --no-edit
+git status
+
+# if conflicts appear:
+git add <filename>
+git commit -m "Merge assigned repository with local practice history"
+
+git push

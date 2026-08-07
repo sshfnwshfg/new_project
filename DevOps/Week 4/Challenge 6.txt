@@ -1,0 +1,39 @@
+cat > full_setup.sh << 'EOF'
+#!/bin/bash
+set -e
+
+# Java
+sudo yum install -y java-21-amazon-corretto
+
+# Maven
+cd /opt
+sudo wget https://dlcdn.apache.org/maven/maven-3/3.9.9/binaries/apache-maven-3.9.9-bin.tar.gz
+sudo tar -xvzf apache-maven-3.9.9-bin.tar.gz
+sudo mv apache-maven-3.9.9 maven
+
+echo 'export JAVA_HOME=/usr/lib/jvm/java-21-amazon-corretto.x86_64' | sudo tee -a /etc/profile.d/maven.sh
+echo 'export M2_HOME=/opt/maven' | sudo tee -a /etc/profile.d/maven.sh
+echo 'export PATH=$PATH:$JAVA_HOME/bin:$M2_HOME/bin' | sudo tee -a /etc/profile.d/maven.sh
+sudo chmod +x /etc/profile.d/maven.sh
+source /etc/profile.d/maven.sh
+
+# Tomcat
+cd /opt
+sudo wget https://dlcdn.apache.org/tomcat/tomcat-9/v9.0.98/bin/apache-tomcat-9.0.98.tar.gz
+sudo tar -xvzf apache-tomcat-9.0.98.tar.gz
+sudo mv apache-tomcat-9.0.98 tomcat
+sudo /opt/tomcat/bin/startup.sh
+
+# Generate + build + deploy Maven webapp
+cd ~
+mvn archetype:generate -DgroupId=vn.edu.rmit -DartifactId=autoApp \
+  -DarchetypeArtifactId=maven-archetype-webapp -DinteractiveMode=false
+cd autoApp
+mvn clean package
+sudo cp target/autoApp.war /opt/tomcat/webapps/
+
+echo "Done. Visit http://<public-ip>:8080/autoApp/"
+EOF
+
+chmod +x full_setup.sh
+./full_setup.sh

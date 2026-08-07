@@ -1,0 +1,7 @@
+curl -L -O https://raw.githubusercontent.com/TomHuynhSG/public_datasets/master/small_cat_dog_dataset.zip
+mv small_cat_dog_dataset.zip\?raw\=true small_cat_dog.zip
+sudo apt install unzip -y
+unzip small_cat_dog.zip
+mkdir -p SORTED_DATA/cat SORTED_DATA/dog
+mv DATA/cat*.jpg SORTED_DATA/cat/
+mv DATA/dog*.jpg SORTED_DATA/dog/

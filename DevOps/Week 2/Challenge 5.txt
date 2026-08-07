@@ -1,0 +1,24 @@
+cat > my_ultimate_script.sh << 'EOF'
+#!/bin/bash
+mkdir -p data/raw/cat data/raw/dog data/train data/test data/validation
+mkdir -p app/blueprints/home_page app/static app/templates
+touch app/blueprints/home_page/blueprint.py
+touch app/static/styles.css app/static/index.js
+touch app/templates/base.html app/templates/home.html
+touch app/app.py app/.gitignore
+mkdir -p scripts
+touch scripts/preprocess.py scripts/model.py scripts/train.py
+mkdir -p notebooks
+
+if [ ! -f small_cat_dog.zip ]; then
+  curl -L -O https://raw.githubusercontent.com/TomHuynhSG/public_datasets/master/small_cat_dog_dataset.zip
+  mv small_cat_dog_dataset.zip\?raw\=true small_cat_dog.zip
+fi
+
+unzip -o small_cat_dog.zip
+mv DATA/cat*.jpg data/raw/cat/ 2>/dev/null
+mv DATA/dog*.jpg data/raw/dog/ 2>/dev/null
+echo "Setup complete."
+EOF
+
+bash my_ultimate_script.sh

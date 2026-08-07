@@ -1,0 +1,16 @@
+docker swarm init
+
+docker service create \
+  --name my-webapp \
+  --replicas 3 \
+  -p 8090:8080 \
+  --mount type=volume,source=my-app-logs,destination=/usr/local/tomcat/logs \
+  tomcat:v3
+
+docker service ls
+docker service ps my-webapp
+
+# kill one container, watch Swarm self-heal
+docker ps
+docker rm -f <container_id>
+docker service ps my-webapp

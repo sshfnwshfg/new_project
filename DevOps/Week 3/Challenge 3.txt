@@ -1,0 +1,26 @@
+# Person A: create repo on GitHub, add Person B as collaborator via Settings > Collaborators
+
+# Person B: accept invite, then
+git clone git@github.com:username/repo.git
+cd repo
+
+# both people, on their own branches:
+git checkout -b person-a-branch
+echo "Hello! My name is Person A!" > person_a.txt
+git add . && git commit -m "add person A file" && git push -u origin person-a-branch
+
+# create a deliberate conflict — both edit the same file on different branches
+git checkout -b shared-edit
+echo "Person A's version" >> shared.txt
+git add . && git commit -m "person A edit" && git push -u origin shared-edit
+
+# Person B does the same on their own branch against the same file, then:
+git checkout main
+git merge person-a-branch
+git merge person-b-branch
+# resolve conflict manually
+git add shared.txt
+git commit -m "resolve shared.txt conflict"
+git push
+
+# PR practice: one person opens a PR on GitHub's web UI, the other clicks "Merge pull request"

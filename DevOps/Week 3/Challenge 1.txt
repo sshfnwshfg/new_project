@@ -1,0 +1,41 @@
+git checkout main
+git remote add origin https://github.com/your_github_name/your_repo.git
+git push -u origin main
+git remote -v
+
+git checkout new_feature
+git push -u origin new_feature
+
+# SSH key setup + switch remote to SSH
+ssh-keygen -t rsa -b 4096 -C "your_email@example.com"
+eval "$(ssh-agent -s)"
+ssh-add ~/.ssh/id_rsa
+cat ~/.ssh/id_rsa.pub
+ssh -T git@github.com
+git remote set-url origin git@github.com:username/your_repo.git
+
+# merge conflict practice
+git checkout -b feature-login
+echo "console.log('some login features')" > login.txt
+git add login.txt
+git commit -m "Add login feature"
+git push -u origin feature-login
+
+git checkout main
+git merge feature-login
+git push origin main
+
+echo "Here are some text Version 1" >> login.txt
+git add . && git commit -m "add Version 1 to login.txt" && git push
+
+git checkout feature-login
+echo "Here are some text to cause a conflict Version 2" >> login.txt
+git add . && git commit -m "add Version 2 to login.txt" && git push
+# fails — diverged
+
+git pull origin main --no-rebase
+# manually edit login.txt to resolve conflict markers
+git add login.txt
+git commit -m "Resolve conflict between main and feature-login"
+git push
+git log --oneline --graph --all

@@ -1,0 +1,13 @@
+curl https://www.gutenberg.org/files/100/100-0.txt > shakespeare.txt
+wc -w shakespeare.txt
+wc -l shakespeare.txt
+grep -oi "romeo" shakespeare.txt | wc -l
+grep -oi "juliet" shakespeare.txt | wc -l
+
+total=0
+for name in Romeo Juliet Macbeth Hamlet Duncan; do
+  count=$(grep -oi "$name" shakespeare.txt | wc -l)
+  echo "$name: $count"
+  total=$((total + count))
+done
+echo "Total: $total"

@@ -1,0 +1,11 @@
+cat > deploy.sh << 'EOF'
+#!/bin/bash
+cd ~/helloWorld
+mvn clean package || { echo "Build failed"; exit 1; }
+cp target/helloWorld.war /opt/tomcat/webapps/
+tomcatdown
+tomcatup
+EOF
+
+chmod +x deploy.sh
+./deploy.sh

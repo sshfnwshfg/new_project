@@ -1,0 +1,31 @@
+mkdir ~/log_analysis && cd ~/log_analysis
+curl -O https://raw.githubusercontent.com/TomHuynhSG/public_datasets/refs/heads/master/access.log
+
+wc -l access.log
+head -5 access.log
+tail -5 access.log
+
+grep " 404 " access.log > 404_errors.log
+
+grep -E " 5[0-9]{2} " access.log | wc -l
+
+awk '{print $1}' access.log | sort | uniq -c | sort -rn | head -5
+
+awk '{print $7}' access.log | sort | uniq -c | sort -rn | head -10
+
+cat > analyze_logs.sh << 'EOF'
+#!/bin/bash
+rm -f report.txt
+echo "Log Analysis Report - $(date)" >> report.txt
+echo "--- Server Error Summary ---" >> report.txt
+grep -E " 5[0-9]{2} " access.log | wc -l >> report.txt
+echo "--- Top 5 Client IPs ---" >> report.txt
+awk '{print $1}' access.log | sort | uniq -c | sort -rn | head -5 >> report.txt
+echo "--- Top 10 Requested Pages ---" >> report.txt
+awk '{print $7}' access.log | sort | uniq -c | sort -rn | head -10 >> report.txt
+echo "Log analysis complete. Report generated at report.txt"
+EOF
+
+chmod +x analyze_logs.sh
+./analyze_logs.sh
+cat report.txt

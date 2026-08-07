@@ -1,0 +1,3 @@
+Payload URL: http://<JENKINS_URL>:<PORT>/github-webhook/
+Content type: application/json
+Trigger events: Just the push event

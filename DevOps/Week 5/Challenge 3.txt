@@ -1,0 +1,14 @@
+# on the Jenkins EC2 server
+ssh-keygen -t rsa -b 4096 -C "your-email@your-company.com"
+cat ~/.ssh/id_rsa.pub
+# paste into GitHub > Settings > SSH and GPG Keys
+
+cat ~/.ssh/id_rsa
+# paste into Jenkins > Manage Credentials > Add Credentials
+#   Kind: SSH Username with Private Key
+#   Username: git
+#   ID: ssh-key-github
+
+ssh -T git@github.com   # verify success
+
+Jenkins job Git URL: git@github.com:username/private-repo.git, credential = ssh-key-github.

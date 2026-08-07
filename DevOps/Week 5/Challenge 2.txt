@@ -1,0 +1,6 @@
+GitHub PAT scopes needed: repo, admin:repo_hook
+Jenkins > Manage Jenkins > Credentials > System > Global > Add Credentials
+  Kind: (username)
+  Username: (GitHub username)
+  Password: (PAT)
+  ID: (Github repo credentials)

@@ -1,0 +1,11 @@
+cd "$WORKSPACE"
+if [ ! -f src/main/webapp/index.jsp ]; then
+  echo "Error: index.jsp not found!"
+  exit 1
+fi
+if grep -q "<title>Hello DevOps Students!</title>" src/main/webapp/index.jsp; then
+  echo "HTML component found!"
+else
+  echo "Error: HTML component not found!"
+  exit 1
+fi

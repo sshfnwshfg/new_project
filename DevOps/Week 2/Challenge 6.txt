@@ -1,0 +1,36 @@
+mkdir -p deployment_lab/scripts deployment_lab/config deployment_lab/logs deployment_lab/secrets
+touch deployment_lab/scripts/deploy.sh
+touch deployment_lab/config/app.conf
+touch deployment_lab/logs/app.log
+touch deployment_lab/secrets/credentials.txt
+
+echo "echo deploying..." >> deployment_lab/scripts/deploy.sh
+echo "env=prod" >> deployment_lab/config/app.conf
+echo "startup ok" >> deployment_lab/logs/app.log
+echo "secret_key=abc123" >> deployment_lab/secrets/credentials.txt
+
+# Requirement 1: owner rwx, group r-x, other none
+chmod 750 deployment_lab/scripts/deploy.sh
+
+# Requirement 2: owner rw, group r, other none
+chmod 640 deployment_lab/config/app.conf
+
+# Requirement 3: owner rw, group r, other r
+chmod 644 deployment_lab/logs/app.log
+
+# Requirement 4: owner rw only, nobody else
+chmod 600 deployment_lab/secrets/credentials.txt
+
+# Requirement 5: only owner can enter/list/modify secrets dir
+chmod 700 deployment_lab/secrets
+
+# Requirement 6: change group ownership (check available groups first)
+cat /etc/group | head -5
+sudo chgrp -R your_available_group deployment_lab
+
+# Requirement 7: verify
+ls -l deployment_lab/scripts/deploy.sh
+ls -l deployment_lab/config/app.conf
+ls -l deployment_lab/logs/app.log
+ls -l deployment_lab/secrets/credentials.txt
+ls -ld deployment_lab/secrets

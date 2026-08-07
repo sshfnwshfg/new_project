@@ -1,0 +1,7 @@
+cat > Dockerfile << 'EOF'
+FROM tomcat:latest
+RUN cp -R /usr/local/tomcat/webapps.dist/* /usr/local/tomcat/webapps
+EOF
+
+docker build -t my-tomcat-image-final .
+docker run -d --name tomcat-container -p 8084:8080 my-tomcat-image-final

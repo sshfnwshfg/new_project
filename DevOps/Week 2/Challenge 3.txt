@@ -1,0 +1,16 @@
+cat > my_script.sh << 'EOF'
+#!/bin/bash
+mkdir -p data/raw/cat data/raw/dog data/train data/test data/validation
+mkdir -p app/blueprints/home_page app/static app/templates
+touch app/blueprints/home_page/blueprint.py
+touch app/static/styles.css app/static/index.js
+touch app/templates/base.html app/templates/home.html
+touch app/app.py app/.gitignore
+mkdir -p scripts
+touch scripts/preprocess.py scripts/model.py scripts/train.py
+mkdir -p notebooks
+EOF
+
+chmod u+x my_script.sh
+./my_script.sh
+ls -l my_script.sh

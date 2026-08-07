@@ -1,0 +1,34 @@
+bash
+# replicate the problem
+ssh -i "devops_project_key.pem" ec2-user@<ec2-public-dns>
+mvn -v          # fails
+sudo su
+mvn -v          # fails
+exit
+sudo su -
+mvn -v          # works
+
+# compare environments
+env | grep PATH   # as ec2-user
+sudo su
+env | grep PATH   # non-login shell
+exit
+sudo su -
+env | grep PATH   # login shell
+
+# fast fix: symlink into a PATH directory everyone already has
+sudo ln -s /opt/maven/bin/mvn /usr/local/bin/mvn
+mvn -v   # now works everywhere
+
+# more complete fix: /etc/profile.d script
+sudo nano /etc/profile.d/maven.sh
+
+bash
+export JAVA_HOME=/usr/lib/jvm/java-21-amazon-corretto.x86_64
+export M2_HOME=/opt/maven
+export PATH=$PATH:$JAVA_HOME/bin:$M2_HOME/bin
+
+bash
+sudo chmod +x /etc/profile.d/maven.sh
+source /etc/profile.d/maven.sh
+mvn -v

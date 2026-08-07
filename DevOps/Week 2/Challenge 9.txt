@@ -1,0 +1,14 @@
+curl -L -O https://github.com/TomHuynhSG/clmystery/archive/master.zip
+unzip master.zip
+cd clmystery-master
+cat instructions
+
+cat crimescene
+grep "CLUE" crimescene
+
+# follow each clue reference into other files, e.g.:
+cat suspects_file_name
+grep "some_lead" another_file
+
+# if stuck:
+cat hint1

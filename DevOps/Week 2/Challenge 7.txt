@@ -1,0 +1,16 @@
+for pkg in tree htop ncdu curl wget jq rsync tmux traceroute dnsutils lsof net-tools; do
+  sudo apt install "$pkg" -y
+done
+
+tree --help | head -5
+htop --help | head -5
+ncdu ~
+curl --version | head -1
+wget --version | head -1
+echo '{"a":1}' | jq .
+rsync --version | head -1
+tmux -V
+traceroute github.com
+nslookup github.com
+lsof -i :22
+netstat -tulnp

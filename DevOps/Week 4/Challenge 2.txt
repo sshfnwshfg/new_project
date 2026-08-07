@@ -1,0 +1,5 @@
+nano /opt/tomcat/conf/server.xml
+# change: <Connector port="8080" ...> to <Connector port="80" ...>
+tomcatdown
+tomcatup
+# also update EC2 security group to allow inbound port 80

@@ -1,0 +1,13 @@
+sudo yum install docker -y
+sudo service docker start
+
+docker images
+docker ps
+docker ps -a
+
+docker run hello-world
+docker images
+docker ps -a
+
+docker rm $(docker ps -aq)
+docker rmi hello-world
