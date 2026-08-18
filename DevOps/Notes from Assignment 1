@@ -1,1 +1,1 @@
-Don't become a sudo user unless the question requires so.
+Don't become a root user unless the question requires so.
