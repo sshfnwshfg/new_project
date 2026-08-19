@@ -1,1 +1,1 @@
-Don't become a root user unless the question requires so.
+Become the root user at the start of the exam (sudo su -)
