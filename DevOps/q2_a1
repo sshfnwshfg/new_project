@@ -1,0 +1,62 @@
+Step 1 — Folder setup (on develop branch)
+git checkout develop
+cd 2026b-cosc2767-a1-<repo-name>   # if not already inside
+mkdir question-2
+cd question-2
+nano my_script_q2.sh
+Step 2 — The script
+A few design notes before the code:
+hello.txt → 640 = owner rw-, group r--, others --- (4+2+0 / 4+0+0 / 0+0+0).
+report.log → owner rwx, group r-x, others none = 750 (4+2+1 / 4+0+1 / 0+0+0).
+Date/branch must be dynamic, not hard-coded — pull them live with date and git branch --show-current when the script runs, not typed in as fixed text.
+The task says "create files/dirs in this order," so the script follows that order literally, then permissions, then content — matching the exact sequence listed.
+#!/bin/bash
+
+# 1. Create the directory structure
+mkdir -p my_app/src
+mkdir -p my_app/logs
+
+# 2. Create hello.txt (empty)
+touch my_app/src/hello.txt
+
+# 3. Create report.log
+touch my_app/logs/report.log
+
+# 4. Set permissions
+chmod 640 my_app/src/hello.txt
+chmod 750 my_app/logs/report.log
+
+# 5. Get dynamic values
+CURRENT_DATE=$(date)
+CURRENT_BRANCH=$(git branch --show-current)
+
+# 6. Write content to report.log
+{
+  echo "Project Initialized by: [Full Name]"
+  echo ""
+  echo "Setup completed on: $CURRENT_DATE"
+  echo "Branch name: $CURRENT_BRANCH"
+} > my_app/logs/report.log
+
+Replace Full Name with actual name. Save (Ctrl+X, Y, Enter).
+
+One thing to watch: git branch --show-current only works correctly if this script is run from inside the git repo (so it can detect which branch you're on) — running it from question-2/ inside your cloned repo satisfies that automatically.
+
+Step 3 — Make executable and run → screenshot 2a.png
+chmod +x my_script_q2.sh
+./my_script_q2.sh
+ls -laR my_app/
+
+Screenshot the terminal showing both the script running and the ls -laR my_app/ output in the same shot (or run them back-to-back so both are visible in one screen) — this is what 2a.png requires. Confirm visually:
+
+hello.txt shows -rw-r-----
+report.log shows -rwxr-x---
+Step 4 — View the log content → screenshot 2b.png
+cat my_app/logs/report.log
+
+Step 5 — Commit everything on develop
+cd ..                     # back to question-2/
+git add my_script_q2.sh my_app/
+git status                 # sanity check what's staged before committing
+git commit -m "Add Bash automation script for Question 2"
+git push
