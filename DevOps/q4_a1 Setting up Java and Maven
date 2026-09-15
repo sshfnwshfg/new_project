@@ -1,0 +1,96 @@
+Step 1 — Setup, install Java
+git checkout develop
+cd 2026b-cosc2767-a1-<your-repo-name>
+mkdir question-4
+cd question-4
+
+yum install -y java-21-amazon-corretto
+java -version
+
+Step 2 — Install Maven
+cd /opt
+wget https://dlcdn.apache.org/maven/maven-3/3.9.9/binaries/apache-maven-3.9.9-bin.tar.gz
+tar -xvzf apache-maven-3.9.9-bin.tar.gz
+mv apache-maven-3.9.9 maven
+
+Check the actual latest version at maven.apache.org/download.cgi and swap the version number if it's changed.
+
+Set environment variables:
+
+nano ~/.bash_profile
+
+Add/confirm these lines:
+
+JAVA_HOME=/usr/lib/jvm/java-21-amazon-corretto.x86_64
+M2_HOME=/opt/maven
+PATH=$PATH:$JAVA_HOME/bin:$M2_HOME/bin
+export JAVA_HOME M2_HOME PATH
+source ~/.bash_profile
+mvn -v
+
+Screenshot → 4b.png
+
+Step 3 — Generate the Maven web app
+bash
+cd ~/2026b-cosc2767-a1-<your-repo-name>/question-4
+mvn archetype:generate -DgroupId=vn.edu.rmit -DartifactId=my_project -DarchetypeArtifactId=maven-archetype-webapp -DinteractiveMode=false
+cd my_project
+Step 4 — Force the WAR filename via pom.xml
+nano pom.xml
+
+Find the <build> section (it currently just has <finalName>my_project</finalName> or similar, or may need adding). Set it explicitly:
+
+xml
+<build>
+  <finalName>mywebsite-s123456</finalName>
+  ...
+</build>
+
+Replace s123456 with your real student ID. This is what controls the actual output filename — the artifactId you set at generation only affects the folder/internal project name, not the packaged file name.
+
+Step 5 — Edit index.jsp → screenshot 4d.png
+nano src/main/webapp/index.jsp
+jsp
+<html>
+<body>
+<h2>[2026] Welcome to Your Name's Web App</h2>
+<p>This is my Maven web application for the COSC2767 midterm exam.</p>
+<a href="about.jsp">About</a>
+</body>
+</html>
+
+Replace Your Name with your actual name. Save, then:
+
+cat src/main/webapp/index.jsp
+
+Screenshot the cat output → 4d.png
+
+Step 6 — Create about.jsp → screenshot 4e.png
+nano src/main/webapp/about.jsp
+jsp
+<html>
+<body>
+<h2>About This Site</h2>
+<p>Created by Your Full Name for the COSC2767 midterm exam.</p>
+<a href="index.jsp">Back to Home</a>
+</body>
+</html>
+cat src/main/webapp/about.jsp
+
+Step 7 — Build
+mvn package
+
+Screenshot the terminal output showing BUILD SUCCESS
+
+ls -la target/*.war
+
+Screenshot confirming the file is exactly mywebsite-s123456.war
+
+If the filename doesn't match, it's almost always because <finalName> in pom.xml wasn't saved correctly or the build used a cached target/ from before your edit — run mvn clean package instead to force a fresh build.
+
+Step 8 — Commit and push
+cd ~/2026b-cosc2767-a1-<your-repo-name>
+git add question-4/
+git status                # confirm target/ war file + source files are both staged as intended
+git commit -m "Set up Maven web application"
+git push
