@@ -1,0 +1,43 @@
+Step 1 — Setup
+git checkout develop
+cd 2026b-cosc2767-a1-<repo-name>
+mkdir question-3
+cd question-3
+curl -L -O https://raw.githubusercontent.com/TomHuynhSG/public_datasets/refs/heads/master/app_server_2026.log
+
+Before writing any pipelines, inspect the actual file first — CSV files sometimes quote fields ("401" instead of 401), which changes your awk match:
+
+head -5 app_server_2026.log
+
+Adjust the commands below if you see quotes around values — I'll note the fix either way.
+
+Field reference (from the format line given)
+1=Timestamp, 2=IP_Address, 3=UserID, 4=HTTP_Status, 5=HTTP_Method, 6=User_Agent, 7=Request_URI, 8=Response_Size
+
+Task 2 — Auth errors (401/403) → screenshot 3a.png
+awk -F',' '$4 == "401" || $4 == "403"' app_server_2026.log > authentication_errors.log
+cat authentication_errors.log
+
+Screenshot both the command and the cat output together.
+
+If head showed quoted values (e.g. ..., "401", ...), use this:
+awk -F',' '$4 == "\"401\"" || $4 == "\"403\""' app_server_2026.log > authentication_errors.log
+
+Task 3 — Top 3 IPs by request count → screenshot 3b.png
+echo "Top 3 IP addresses:"
+awk -F',' 'NR>1 {print $2}' app_server_2026.log | sort | uniq -c | sort -nr | head -3
+NR>1 skips the header row (remove it if the file has no header line — check your head -5 output).
+$2 = IP_Address field.
+sort | uniq -c groups and counts identical IPs; sort -nr orders by count descending; head -3 keeps only the top three — matching the count IP output format shown in the question exactly.
+
+Task 4 — Top 5 requested URIs
+echo "Top 5 request URIs:"
+awk -F',' 'NR>1 {print $7}' app_server_2026.log | sort | uniq -c | sort -nr | head -5
+
+Same pipeline pattern, just swapping $2 (IP) for $7 (Request_URI) and head -3 for head -5.
+
+Commit:
+git add authentication_errors.log
+git status          # confirm only the intended file is staged
+git commit -m "Add authentication error analysis for Question 3"
+git push
