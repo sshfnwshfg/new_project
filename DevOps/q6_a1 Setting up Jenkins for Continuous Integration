@@ -1,0 +1,120 @@
+Step 1 — Install Jenkins on this same EC2 instance
+sudo wget -O /etc/yum.repos.d/jenkins.repo https://pkg.jenkins.io/rpm-stable/jenkins.repo
+yum upgrade -y
+yum install -y fontconfig java-21-amazon-corretto
+yum install jenkins -y
+systemctl daemon-reload
+systemctl enable jenkins
+systemctl start jenkins
+systemctl status jenkins
+
+systemctl enable is what makes it "start automatically at boot" as the task requires.
+
+Step 2 — Open port 8080 for Jenkins
+Since Tomcat moved off 8080 in Question 5, this port is free — but still need it explicitly allowed inbound if it isn't already: EC2 → Security Groups → SG → Inbound rules → Add rule → Custom TCP, port 8080, source Anywhere.
+
+Step 3 — First login
+cat /var/lib/jenkins/secrets/initialAdminPassword
+
+Browser: http://<EC2-Public-IP>:8080 → paste that password → skip "Install suggested plugins" for now (close the dialog) → create admin user when prompted.
+
+Install just what is needed: Manage Jenkins → Plugins → Available plugins → search and install:
+Git plugin (usually bundled already — check Installed tab first)
+Maven Integration plugin
+GitHub plugin
+
+Step 4 — Global Tool Configuration
+Manage Jenkins → Tools:
+
+JDK:
+Name: jdk21
+JAVA_HOME: /usr/lib/jvm/java-21-amazon-corretto.x86_64
+
+Uncheck "Install automatically" if it's ticked — you already installed Java in Question 4.
+
+Maven:
+Name: maven3
+MAVEN_HOME: /opt/maven
+
+Same — uncheck "Install automatically," you already have it at /opt/maven.
+Save.
+
+Step 5 — Get Jenkins authenticated to private repo
+
+GitHub repo is private, so Jenkins needs its own credential — don't rely on /root/.ssh/id_rsa existing on disk, because the Jenkins service runs as its own jenkins OS user (not root) and can't read root's private key files even though you're logged into the terminal as root. The fix is to paste the key directly into Jenkins as a stored credential, which works regardless of which OS user the Jenkins process runs as.
+
+Generate a dedicated key for Jenkins (cleaner than reusing personal one):
+
+ssh-keygen -t rsa -b 4096 -m PEM -f /root/jenkins_key -N ""
+cat /root/jenkins_key.pub
+
+Copy that public key → GitHub → Settings → SSH and GPG keys → New SSH key → paste → Add.
+
+cat /root/jenkins_key
+
+Copy the entire output including the -----BEGIN and -----END lines.
+
+In Jenkins: Manage Jenkins → Credentials → System → Global credentials → + Add Credentials
+
+Kind: SSH Username with private key
+ID: github-ssh-key
+Username: git
+Private Key: Enter directly → paste the full key
+Passphrase: (leave empty)
+
+Save.
+
+Step 6 — Create the Jenkins job
+
+New Item → name it devops-ci-s123456 (student ID) → Freestyle project → OK.
+
+Source Code Management → Git:
+
+Repository URL: git@github.com:rmit-vietnam-computing-technologies/2026b-cosc2767-a1-<repo-name>.git
+Credentials: github-ssh-key (select from dropdown)
+Branches to build: */develop
+
+Build → Add build step → Invoke top-level Maven targets:
+
+Maven Version: maven3
+Goals: clean package
+POM: question-4/my_project/pom.xml
+
+The POM path matters here — Jenkins clones whole repo into its workspace, so it needs the path relative to the repo root to find actual Maven project buried inside question-4/.
+
+Save the job, click Build Now, and confirm it succeeds:
+
+Jenkins job page → Build History → click the build number → Console Output → should end in "BUILD SUCCESS"
+
+Step 7 — Set up the GitHub webhook
+
+GitHub repo → Settings → Webhooks → Add webhook:
+
+Payload URL: http://<EC2-Public-IP>:8080/github-webhook/
+Content type: application/json
+Secret: (leave blank)
+Which events: Just the push event
+Active: checked
+
+Add webhook.
+
+Back in the Jenkins job config → Build Triggers → check "GitHub hook trigger for GITScm polling" → Save.
+
+Step 8 — Prove the automated trigger works
+cd ~/2026b-cosc2767-a1-<repo-name>
+git checkout develop
+mkdir -p question-6
+echo "Testing automated Jenkins build trigger via GitHub webhook - $(date)" > question-6/build-trigger.txt
+git add question-6/build-trigger.txt
+git commit -m "Test automated Jenkins build trigger"
+git push
+
+Within a few seconds, check Jenkins Build History — a new build should appear without you clicking Build Now. Click into it → Console Output should show near the top something like Started by GitHub push by <username> (rather than "Started by user admin").
+
+Step 9 — Commit configuration files
+cp /root/jenkins_key.pub question-6/
+cd ~/2026b-cosc2767-a1-<repo-name>
+git add question-6/
+git status
+git commit -m "Add Jenkins job configuration evidence for Question 6"
+git push
