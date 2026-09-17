@@ -1,7 +1,7 @@
 AWS Console → EC2 → Key Pairs (left sidebar, under "Network & Security")
 Click Create key pair
 Fill in:
-Name: something memorable, e.g. devops_midterm_key
+Name: something memorable, e.g. devops_endofterm_key
 Key pair type: RSA
 Private key file format: .pem (use this when SSHing from Mac/Linux terminal or Windows OpenSSH/PowerShell)
 Click Create key pair → browser will immediately download the .pem file. ONLY chance to get it — AWS never stores the private key and can't provide again if lost.
