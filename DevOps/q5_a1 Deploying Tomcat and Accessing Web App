@@ -1,0 +1,64 @@
+Step 1 — Install Tomcat
+cd /opt
+wget https://dlcdn.apache.org/tomcat/tomcat-9/v9.0.98/bin/apache-tomcat-9.0.98.tar.gz
+tar -xvzf apache-tomcat-9.0.98.tar.gz
+mv apache-tomcat-9.0.98 tomcat
+
+Check tomcat.apache.org/download-90.cgi for the current version number and swap it in if different.
+
+Step 2 — Start Tomcat (default port 8080) and verify
+/opt/tomcat/bin/startup.sh
+
+Give it a few seconds, then confirm it's actually listening:
+netstat -tulnp | grep 8080
+
+(if netstat isn't found: yum install net-tools -y first)
+
+Step 3 — Deploy WAR from Question 4
+cp ~/2026b-cosc2767-a1-<repo-name>/question-4/my_project/target/mywebsite-s123456.war /opt/tomcat/webapps/
+Tomcat auto-unpacks it within a few seconds — confirm:
+ls /opt/tomcat/webapps/
+both mywebsite-s123456.war and a matching unpacked folder mywebsite-s123456/.
+
+Step 4 — Open port 8080 in the Security Group
+
+In AWS Console: EC2 → Security Groups → instance's SG → Inbound rules → Edit inbound rules → Add rule
+Type: Custom TCP, Port: 8080, Source: Anywhere (0.0.0.0/0)
+Save rules
+
+Step 5 — Access on 8080
+In browser:
+http://<EC2-Public-IP>:8080/mywebsite-s123456/
+
+Step 6 — Reconfigure Tomcat to 9xxx port
+Figure out port first: last 3 digits of student ID, prefixed with 9.
+
+/opt/tomcat/bin/shutdown.sh
+nano /opt/tomcat/conf/server.xml
+Find this line (search with Ctrl+W in nano):
+<Connector port="8080" protocol="HTTP/1.1"
+
+Change 8080 to assigned port, e.g.:
+<Connector port="9456" protocol="HTTP/1.1"
+
+Save (Ctrl+X, Y, Enter), then restart:
+/opt/tomcat/bin/startup.sh
+
+Step 7 — Open 9xxx port in the Security Group
+Same as Step 4, but this time: Type Custom TCP, Port 9456 (actual port), Source Anywhere.
+
+Step 8 — Access on the new port
+http://<EC2-Public-IP>:9456/mywebsite-s123456/
+
+Step 9 — ecurity Group inbound rules → 5c.png
+AWS Console → EC2 → Security Groups → SG → Inbound rules tab. This should now show both 8080 and 9xxx port (plus 22 for SSH, and anything from earlier questions).
+
+Step 10 — Copy server.xml into repo and commit
+mkdir -p ~/2026b-cosc2767-a1-<repo-name>/question-5
+cp /opt/tomcat/conf/server.xml ~/2026b-cosc2767-a1-<repo-name>/question-5/
+cd ~/2026b-cosc2767-a1-<repo-name>
+git checkout develop
+git add question-5/server.xml
+git status
+git commit -m "Configure Tomcat to run on the port 9xxx"
+git push
