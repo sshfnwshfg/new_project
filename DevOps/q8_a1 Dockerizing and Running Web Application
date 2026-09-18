@@ -1,0 +1,62 @@
+Step 1 — Install Docker, start it, enable at boot
+yum install docker -y
+service docker start
+systemctl enable docker
+docker --version
+service docker status
+
+Step 2 — Open port 8086 in the Security Group
+EC2 → Security Groups → SG → Inbound rules → Add rule → Custom TCP, port 8086, source Anywhere.
+
+Step 3 — Confirm the WAR exists (rebuild if needed)
+ls -la ~/2026b-cosc2767-a1-<repo-name>/question-4/my_project/target/mywebsite-s123456.war
+
+If it's missing or stale:
+
+cd ~/2026b-cosc2767-a1-<repo-name>/question-4/my_project
+mvn clean package
+
+Step 4 — Set up question-8 and copy the WAR in (not committed)
+
+cd ~/2026b-cosc2767-a1-<repo-name>
+git checkout develop
+mkdir -p question-8
+cp question-4/my_project/target/mywebsite-s123456.war question-8/
+cd question-8
+
+The task explicitly says the WAR doesn't need to be committed — it's only there so the Dockerfile's COPY instruction (next step) can find it during the build. You'll exclude it before committing (Step 8 below).
+
+Step 5 — Write the Dockerfile
+nano Dockerfile
+dockerfile
+FROM tomcat:latest
+RUN cp -R /usr/local/tomcat/webapps.dist/* /usr/local/tomcat/webapps
+COPY ./mywebsite-s123456.war /usr/local/tomcat/webapps
+
+Replace s123456 with actual student ID. Save, then:
+
+cat Dockerfile
+
+Step 6 — Build the image
+docker build -t mywebsite-s123456-image .
+docker images
+
+Step 7 — Run the container
+docker run -d --name mywebsite-s123456-container -p 8086:8080 mywebsite-s123456-image
+docker ps
+
+Step 8 — Access it in the browser
+http://<EC2-Public-IP>:8086/mywebsite-s123456/
+
+Step 9 — Stop, remove, confirm it's gone
+docker stop mywebsite-s123456-container
+docker rm mywebsite-s123456-container
+docker ps -a
+
+Step 10 — Commit the Dockerfile only (exclude the WAR)
+cd ~/2026b-cosc2767-a1-<repo-name>
+rm question-8/*.war
+git add question-8/Dockerfile
+git status
+git commit -m "Add Dockerfile for containerized web application"
+git push
