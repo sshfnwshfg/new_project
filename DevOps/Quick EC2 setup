@@ -75,7 +75,7 @@ git config --global user.email "your_email@example.com"
 
 Clone your assigned repo:
 cd ~
-git clone git@github.com:rmit-vietnam-computing-technologies/<your-assigned-repo>.git
+git clone git@github.com:<assigned-repo>.git
 cd <your-assigned-repo>
 
 Edit README.md on main:
