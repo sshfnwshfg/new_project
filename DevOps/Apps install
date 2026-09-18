@@ -6,9 +6,9 @@ java -version
 === MAVEN ===
 sudo su -
 cd /opt
-wget https://dlcdn.apache.org/maven/maven-3/3.9.9/binaries/apache-maven-3.9.9-bin.tar.gz
-tar -xvzf apache-maven-3.9.9-bin.tar.gz
-mv apache-maven-3.9.9 maven
+wget https://dlcdn.apache.org/maven/maven-3/3.9.9/binaries/apache-maven-3.9.16-bin.tar.gz
+tar -xvzf apache-maven-3.9.16-bin.tar.gz
+mv apache-maven-3.9.16 maven
 nano ~/.bash_profile
 JAVA_HOME=/usr/lib/jvm/java-21-amazon-corretto.x86_64
 M2_HOME=/opt/maven
