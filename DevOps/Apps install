@@ -1,0 +1,58 @@
+=== JAVA ===
+sudo su -
+yum install -y java-21-amazon-corretto
+java -version
+
+=== MAVEN ===
+sudo su -
+cd /opt
+wget https://dlcdn.apache.org/maven/maven-3/3.9.9/binaries/apache-maven-3.9.9-bin.tar.gz
+tar -xvzf apache-maven-3.9.9-bin.tar.gz
+mv apache-maven-3.9.9 maven
+nano ~/.bash_profile
+JAVA_HOME=/usr/lib/jvm/java-21-amazon-corretto.x86_64
+M2_HOME=/opt/maven
+PATH=$PATH:$JAVA_HOME/bin:$M2_HOME/bin
+export JAVA_HOME M2_HOME PATH
+source ~/.bash_profile
+mvn -v
+
+=== TOMCAT ===
+sudo su -
+cd /opt
+wget https://dlcdn.apache.org/tomcat/tomcat-9/v9.0.98/bin/apache-tomcat-9.0.98.tar.gz
+tar -xvzf apache-tomcat-9.0.98.tar.gz
+mv apache-tomcat-9.0.98 tomcat
+/opt/tomcat/bin/startup.sh
+/opt/tomcat/bin/shutdown.sh
+
+=== ANSIBLE ===
+sudo su -
+yum install -y ansible
+ansible --version
+
+=== DOCKER ===
+sudo su -
+yum install docker -y
+service docker start
+systemctl enable docker
+docker --version
+
+=== DOCKER COMPOSE ===
+sudo su -
+curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+chmod +x /usr/local/bin/docker-compose
+docker-compose version
+
+=== KUBERNETES (kubectl) ===
+sudo su -
+curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+kubectl version --client
+
+=== MINIKUBE ===
+sudo su -
+curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+install minikube-linux-amd64 /usr/local/bin/minikube
+minikube start --force
+minikube status
