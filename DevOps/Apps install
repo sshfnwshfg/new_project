@@ -22,9 +22,9 @@ mvn -v
 === TOMCAT ===
 sudo su -
 cd /opt
-wget https://dlcdn.apache.org/tomcat/tomcat-9/v9.0.98/bin/apache-tomcat-9.0.98.tar.gz
-tar -xvzf apache-tomcat-9.0.98.tar.gz
-mv apache-tomcat-9.0.98 tomcat
+wget https://dlcdn.apache.org/tomcat/tomcat-9/v9.0.122/bin/apache-tomcat-9.0.122.tar.gz
+tar -xvzf apache-tomcat-9.0.122.tar.gz
+mv apache-tomcat-9.0.122 tomcat
 /opt/tomcat/bin/startup.sh
 /opt/tomcat/bin/shutdown.sh
 
