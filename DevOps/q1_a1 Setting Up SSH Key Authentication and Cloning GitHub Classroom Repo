@@ -10,43 +10,36 @@ Reuse existing .pem key pair from the course (or create a new one).
 No screenshot required for this step per the list — just get it running.
 
 Task 4 — Set the hostname
-bash
+
 ssh -i "devops_project_key.pem" ec2-user@<public-ip-or-dns>
 sudo su -
 nano /etc/hostname
 Replace the contents with just:
 s123456-midterm-exam-2026b
 (swap in student ID). Save (Ctrl+X, Y, Enter), then:
-bash
 reboot
 Wait ~1 minute, SSH back in, and go root again:
-bash
 ssh -i "devops_project_key.pem" ec2-user@<public-ip-or-dns>
 sudo su -
 Prompt should now read exactly root@s123456-midterm-exam-2026b:~# — confirm this before taking any further screenshot in the exam, since every terminal screenshot from here on must show this exact hostname.
 
 Task 5 — Generate SSH key pair → 1a.png
-bash
 ssh-keygen -t rsa -b 4096 -C "email@example.com"
 Press Enter through the prompts (default location, empty passphrase is fine). Screenshot the terminal output of this command — full screen, taskbar with date/time visible.
 
 Task 6 — Add public key to GitHub → 1b.png
-bash
 cat ~/.ssh/id_rsa.pub
 Copy the full output → GitHub → Settings → SSH and GPG keys → New SSH key → paste → give it a title → Add SSH key.
 
 Task 7 — Test SSH connection → 1c.png
-bash
 ssh -T git@github.com
 Type yes if prompted about host authenticity.
 
 Task 8 — Clone the repo → 1d.png
-bash
 cd ~
 git clone git@github.com:rmit-vietnam-computing-technologies/2026b-cosc2767-a1-<campus>-<your-github-username>-<student-id>.git
 
 Task 9 — Edit README.md, commit + push to main → 1e.png
-bash
 cd 2026b-cosc2767-a1-<repo-name>
 git config --global user.name "Full Name"
 git config --global user.email "you@example.com"
@@ -59,14 +52,11 @@ Assignment 1 - Mid-term Exam
 [GitHub username]
 
 Save, then:
-
-bash
 git add README.md
 git commit -m "Edit the README file"
 git push
 
 Task 10 — Create develop branch, question-1 folder → 1f.png
-bash
 git checkout -b develop
 mkdir question-1
 cp README.md question-1/
