@@ -26,6 +26,15 @@ mv apache-tomcat-9.0.98 tomcat
 /opt/tomcat/bin/startup.sh
 /opt/tomcat/bin/shutdown.sh
 
+=== JENKINS ===
+sudo wget -O /etc/yum.repos.d/jenkins.repo https://pkg.jenkins.io/rpm-stable/jenkins.repo
+yum upgrade -y
+yum install -y fontconfig java-21-amazon-corretto
+yum install jenkins -y
+systemctl daemon-reload
+systemctl enable jenkins
+systemctl start jenkins
+
 === ANSIBLE ===
 sudo su -
 yum install -y ansible
