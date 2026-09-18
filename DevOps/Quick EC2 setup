@@ -1,0 +1,26 @@
+AWS Learner Lab & Instance Launch (prerequisite to everything)
+Log into AWS Academy Learner Lab → click Start Lab
+
+EC2 → Launch Instance:
+Name: DevOps-Final-Exam-2026B
+AMI: Amazon Linux 2023 (default)
+Instance type: t3.micro
+Key pair: Create new key pair → name it e.g. devops_final_key → type RSA → format .pem → Create (this downloads to your Windows Downloads folder)
+Security group: create new, name it e.g. DevOps_Final_SG, allow inbound:
+SSH (22) — Anywhere
+Custom TCP 8080 — Anywhere (Jenkins/Tomcat default)
+Custom TCP 8086 — Anywhere (Docker container)
+Custom TCP 9000-9999 — Anywhere (covers Tomcat 9xxx port + Minikube NodePort range flexibility)
+Storage: 15 GB (Jenkins needs headroom — bump from the 8 GB default)
+Launch instance.
+Wait until it shows Running, then copy its Public IPv4 address.
+
+Lock down your key on Windows (Command Prompt, run as Administrator):
+
+cd %USERPROFILE%\Downloads
+icacls devops_final_key.pem /reset
+icacls devops_final_key.pem /inheritance:r
+icacls devops_final_key.pem /grant:r "%USERNAME%:(R)"
+
+Connect:
+ssh -i "devops_final_key.pem" ec2-user@<EC2-Public-IP>
