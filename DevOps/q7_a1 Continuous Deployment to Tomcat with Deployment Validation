@@ -1,0 +1,85 @@
+Step 1 — Write deployment_validation.sh
+cd ~/2026b-cosc2767-a1-<repo-name>
+git checkout develop
+mkdir -p question-7
+nano question-7/deployment_validation.sh
+
+#!/bin/bash
+
+URL="http://<Tomcat-Server-IP>:9xxx/mywebsite-<student-id>/"
+EXPECTED_TEXT="Welcome to [name]'s Web App"
+
+PAGE_CONTENT=$(curl -s "$URL")
+
+if echo "$PAGE_CONTENT" | grep -q "$EXPECTED_TEXT"; then
+  echo "Validation SUCCESS: Expected text found at $URL"
+  exit 0
+else
+  echo "Validation FAILURE: Expected text NOT found at $URL"
+  exit 1
+fi
+
+Replace <Tomcat-Server-IP> with EC2 public IP, 9xxx with actual port from Question 5, <student-id> with WAR's actual name, and EXPECTED_TEXT with the exact text currently in index.jsp from Question 4 (must match verbatim, or grep won't find it).
+
+curl -s = silent mode (no progress bar cluttering the output).
+grep -q = quiet mode, no output, just a pass/fail exit code internally — if reacts to that.
+exit 0 = success (the Unix convention: 0 means "no error"), exit 1 = failure — this exit code is exactly what Jenkins reads to decide the build's overall status.
+
+chmod +x question-7/deployment_validation.sh
+git add question-7/deployment_validation.sh
+git commit -m "Add deployment validation script"
+git push
+Step 2 — Add the post-build shell step in Jenkins
+
+Go to devops-ci-<student-id> job → Configure → scroll to Build Steps (below the Maven build step) → Add build step → Execute shell:
+
+# Deploy the freshly-built WAR to Tomcat
+cp $WORKSPACE/question-4/my_project/target/*.war /opt/tomcat/webapps/
+
+# Give Tomcat a moment to unpack and start serving it
+sleep 10
+
+# Run the validation script — its exit code decides this build's pass/fail
+bash $WORKSPACE/question-7/deployment_validation.sh
+$WORKSPACE is a Jenkins-provided variable pointing at the exact folder the repo was cloned into for this build — using it instead of a hardcoded path keeps this portable.
+The sleep 10 matters: Tomcat needs a few seconds to actually unpack and deploy the WAR after the file lands in webapps/; without it, curl might hit the URL before the app is actually live and fail with a false negative.
+Because this shell step is the last step, its exit code (from the validation script, since it's the last command run) becomes the build's overall result — no extra Jenkins config needed for this wiring, it's automatic.
+
+Save.
+
+Step 3 — Test the success scenario
+Build Now → wait for it to finish
+
+Should be green/blue (success). Console Output
+Build History page
+
+Step 4 — Test the failure scenario
+
+Edit the source index.jsp from Question 4 to intentionally break the match:
+
+nano ~/2026b-cosc2767-a1-<repo-name>/question-4/my_project/src/main/webapp/index.jsp
+
+Change the welcome text to something like Incorrect Message (per the task instructions), save, then:
+
+cd ~/2026b-cosc2767-a1-<repo-name>
+git add question-4/my_project/src/main/webapp/index.jsp
+git commit -m "Temporarily break index.jsp to test validation failure"
+git push
+
+This push should auto-trigger the build via Question 6 webhook. Watch Jenkins Build History — this build should fail (red).
+
+Console Output
+Build History
+
+Step 5 — Revert the intentional breakage
+
+Important — don't leave this broken, since later questions (and re-grading) likely expect Question 4's app to actually work correctly:
+
+nano ~/2026b-cosc2767-a1-<repo-name>/question-4/my_project/src/main/webapp/index.jsp
+
+Restore the original correct welcome text, then:
+
+cd ~/2026b-cosc2767-a1-<repo-name>
+git add question-4/my_project/src/main/webapp/index.jsp
+git commit -m "Restore correct index.jsp message after validation testing"
+git push
